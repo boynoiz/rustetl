@@ -1,2 +1,30 @@
-.idea
+# Rust
+target/
+Cargo.lock
+*.rs.bk
+*.pdb
+
+# Windmill / Docker volumes  
+worker_logs/
+db_data/
+worker_cache/
+caddy_data/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# Local overrides
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
 .env

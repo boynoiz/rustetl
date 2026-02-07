@@ -13,7 +13,7 @@ A hands-on learning project for building fast, efficient ETL pipelines using Win
 ## 📚 Project Structure
 
 ```
-windmill-rust-learning/
+windmill/
 ├── docs/                          # Documentation
 │   ├── LEARNING_PATH.md          # 10-week structured curriculum
 │   ├── QUICK_START_RUST.md       # Get started in 5 minutes
@@ -35,8 +35,14 @@ windmill-rust-learning/
 │
 ├── sample-data/                   # Test CSV files
 │
-├── docker-compose.yml            # Windmill stack
-└── .env                          # Configuration
+├── docker-compose.yaml           # Windmill stack (running)
+├── .env                          # Configuration
+├── Caddyfile                     # Reverse proxy
+├── .gitignore                    # Git ignore
+├── LICENSE                       # MIT License
+├── SETUP.md                      # Setup guide
+├── CONTRIBUTING.md               # How to contribute
+└── GIT_INIT.sh                   # Git initialization script
 ```
 
 ## 🚀 Quick Start
@@ -44,7 +50,7 @@ windmill-rust-learning/
 ### 1. Start Windmill
 
 ```bash
-cd windmill-rust-learning
+cd ~/Projects/windmill
 docker compose up -d
 ```
 
