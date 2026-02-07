@@ -51,9 +51,9 @@ async fn async_main(db_host: Option<String>) -> anyhow::Result<serde_json::Value
     if !exists {
         pool.close().await;
         return Ok(json!({
-            "status": "error",
-            "message": "❌ customers table not found!"
-        }));
+              "status": "error",
+              "message": "❌ customers table not found!"
+          }));
     }
 
     // Read data
@@ -68,9 +68,9 @@ async fn async_main(db_host: Option<String>) -> anyhow::Result<serde_json::Value
     if total == 0 {
         pool.close().await;
         return Ok(json!({
-            "status": "error",
-            "message": "❌ No data found!"
-        }));
+              "status": "error",
+              "message": "❌ No data found!"
+          }));
     }
 
     // Extract to vectors
@@ -96,15 +96,15 @@ async fn async_main(db_host: Option<String>) -> anyhow::Result<serde_json::Value
 
     // Create Polars DataFrame
     let df = df! {
-        "id" => &ids,
-        "name" => &names,
-        "email" => &emails,
-        "phone" => &phones,
-        "address" => &addresses,
-        "age" => &ages,
-        "salary" => &salaries,
-        "ssn" => &ssns,
-    }?;
+          "id" => &ids,
+          "name" => &names,
+          "email" => &emails,
+          "phone" => &phones,
+          "address" => &addresses,
+          "age" => &ages,
+          "salary" => &salaries,
+          "ssn" => &ssns,
+      }?;
 
     println!("\n📊 Original Data (first 3):");
     println!("{}", df.head(Some(3)));
@@ -143,15 +143,15 @@ async fn async_main(db_host: Option<String>) -> anyhow::Result<serde_json::Value
         .collect();
 
     let anonymized_df = df! {
-        "id" => &ids,
-        "name_hash" => &anonymized_names,
-        "email_hash" => &anonymized_emails,
-        "phone" => &anonymized_phones,
-        "address" => &anonymized_addresses,
-        "age" => &ages,
-        "salary_bucket" => &salary_buckets,
-        "ssn" => &anonymized_ssns,
-    }?;
+          "id" => &ids,
+          "name_hash" => &anonymized_names,
+          "email_hash" => &anonymized_emails,
+          "phone" => &anonymized_phones,
+          "address" => &anonymized_addresses,
+          "age" => &ages,
+          "salary_bucket" => &salary_buckets,
+          "ssn" => &anonymized_ssns,
+      }?;
 
     println!("\n📊 Anonymized (first 3):");
     println!("{}", anonymized_df.head(Some(3)));
@@ -164,19 +164,19 @@ async fn async_main(db_host: Option<String>) -> anyhow::Result<serde_json::Value
 
     sqlx::query(
         "CREATE TABLE customers_anonymized (
-            id INTEGER PRIMARY KEY,
-            name_hash VARCHAR(255),
-            email_hash VARCHAR(255),
-            phone VARCHAR(50),
-            address TEXT,
-            age INTEGER,
-            salary_bucket VARCHAR(50),
-            ssn VARCHAR(20),
-            anonymized_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )"
+              id INTEGER PRIMARY KEY,
+              name_hash VARCHAR(255),
+              email_hash VARCHAR(255),
+              phone VARCHAR(50),
+              address TEXT,
+              age INTEGER,
+              salary_bucket VARCHAR(50),
+              ssn VARCHAR(20),
+              anonymized_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          )"
     )
-    .execute(&pool)
-    .await?;
+        .execute(&pool)
+        .await?;
 
     sqlx::query("CREATE INDEX idx_customers_anon_age ON customers_anonymized(age)")
         .execute(&pool)
@@ -187,19 +187,19 @@ async fn async_main(db_host: Option<String>) -> anyhow::Result<serde_json::Value
     for i in 0..total {
         sqlx::query(
             "INSERT INTO customers_anonymized
-             (id, name_hash, email_hash, phone, address, age, salary_bucket, ssn)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)"
+               (id, name_hash, email_hash, phone, address, age, salary_bucket, ssn)
+               VALUES ($1, $2, $3, $4, $5, $6, $7, $8)"
         )
-        .bind(ids[i])
-        .bind(&anonymized_names[i])
-        .bind(&anonymized_emails[i])
-        .bind(&anonymized_phones[i])
-        .bind(&anonymized_addresses[i])
-        .bind(ages[i])
-        .bind(&salary_buckets[i])
-        .bind(&anonymized_ssns[i])
-        .execute(&pool)
-        .await?;
+            .bind(ids[i])
+            .bind(&anonymized_names[i])
+            .bind(&anonymized_emails[i])
+            .bind(&anonymized_phones[i])
+            .bind(&anonymized_addresses[i])
+            .bind(ages[i])
+            .bind(&salary_buckets[i])
+            .bind(&anonymized_ssns[i])
+            .execute(&pool)
+            .await?;
 
         if (i + 1) % 100 == 0 {
             println!("  ✓ {}/{}", i + 1, total);
@@ -210,14 +210,14 @@ async fn async_main(db_host: Option<String>) -> anyhow::Result<serde_json::Value
     println!("\n✅ Complete!");
 
     Ok(json!({
-        "status": "success",
-        "engine": "sqlx + Polars",
-        "database": "shopping",
-        "tables": {
-            "original": "customers",
-            "anonymized": "customers_anonymized"
-        },
-        "records_processed": total,
-        "gdpr_compliant": true
-    }))
+          "status": "success",
+          "engine": "sqlx + Polars",
+          "database": "shopping",
+          "tables": {
+              "original": "customers",
+              "anonymized": "customers_anonymized"
+          },
+          "records_processed": total,
+          "gdpr_compliant": true
+      }))
 }

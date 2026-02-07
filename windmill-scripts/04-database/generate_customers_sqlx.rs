@@ -92,7 +92,7 @@ async fn async_main(
         let name: String = Name().fake();
         let email: String = SafeEmail().fake();
         let phone: String = PhoneNumber().fake();
-        let street: String = StreetAddress().fake();
+        let street: String = StreetName().fake();
         let city: String = CityName().fake();
         let address = format!("{}, {}", street, city);
         let age: i32 = (25..65).fake();
