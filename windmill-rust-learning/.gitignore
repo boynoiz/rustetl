@@ -1,0 +1,30 @@
+# Rust
+target/
+Cargo.lock
+*.rs.bk
+*.pdb
+
+# Windmill / Docker
+.env.local
+*.log
+worker_logs/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Local testing
+local-testing/target/
+local-testing/Cargo.lock
+
+# Temporary files
+*.tmp
+*.bak
+.cache/
+
+# Don't ignore .env (it's part of the template)
+# but add .env.local for local overrides

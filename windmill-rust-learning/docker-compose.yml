@@ -1,0 +1,81 @@
+# Windmill Stack for Learning
+# Based on: https://www.windmill.dev/docs/advanced/self_host
+
+version: "3.7"
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: changeme
+      POSTGRES_DB: windmill
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging: *default-logging
+
+  windmill_server:
+    image: ${WM_IMAGE:-ghcr.io/windmill-labs/windmill-full:latest}
+    pull_policy: always
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgres://postgres:changeme@db/windmill?sslmode=disable
+      - MODE=server
+    depends_on:
+      db:
+        condition: service_healthy
+    logging: *default-logging
+
+  windmill_worker:
+    image: ${WM_IMAGE:-ghcr.io/windmill-labs/windmill-full:latest}
+    pull_policy: always
+    deploy:
+      replicas: 2
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgres://postgres:changeme@db/windmill?sslmode=disable
+      - MODE=worker
+      - WORKER_GROUP=default
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - worker_cache:/tmp/windmill/cache
+    logging: *default-logging
+
+  windmill_worker_native:
+    image: ${WM_IMAGE:-ghcr.io/windmill-labs/windmill-full:latest}
+    pull_policy: always
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgres://postgres:changeme@db/windmill?sslmode=disable
+      - MODE=worker
+      - WORKER_GROUP=native
+    depends_on:
+      db:
+        condition: service_healthy
+    logging: *default-logging
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    command: caddy reverse-proxy --from :80 --to windmill_server:8000
+    logging: *default-logging
+
+volumes:
+  db_data:
+  worker_cache:

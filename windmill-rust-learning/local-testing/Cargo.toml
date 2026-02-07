@@ -1,0 +1,13 @@
+[package]
+name = "polars-test"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+polars = { version = "0.44", features = ["lazy", "csv"] }
+serde_json = "1.0"
+anyhow = "1.0"
+
+[[example]]
+name = "test_parameterized"
+path = "examples/test_parameterized.rs"
